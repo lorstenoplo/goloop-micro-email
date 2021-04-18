@@ -10,7 +10,7 @@ type input = {
 
 const sendReportEmail = async (req: VercelRequest, res: VercelResponse) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
-  const { to, from, text }: input = req.body;
+  const { to, from, text }: input = JSON.parse(req.body);
 
   const msg = {
     to, // Change to your recipient
@@ -21,10 +21,10 @@ const sendReportEmail = async (req: VercelRequest, res: VercelResponse) => {
 
   try {
     await sgMail.send(msg);
-    res.send("email sent");
+    res.json({ report: true });
     console.log("Email sent");
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json({ error, report: null });
     console.error(error);
   }
 };
